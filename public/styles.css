@@ -1,5 +1,4 @@
-
-/* Basic settings */
+```css
 * {
     margin: 0;
     padding: 0;
@@ -12,16 +11,16 @@ html {
 
 body {
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
+    background: #f5f5f5;
     color: #222;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 /* Header */
 header {
     background: #222;
     color: white;
-    padding: 15px 20px;
+    padding: 15px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -35,32 +34,34 @@ header h2 {
 
 nav {
     display: flex;
-    gap: 15px;
+    gap: 18px;
     flex-wrap: wrap;
 }
 
 nav a {
     color: white;
     text-decoration: none;
+    font-size: 14px;
 }
 
 nav a:hover {
     color: #00c853;
 }
 
-/* Main content */
+/* Main */
 main {
     width: 92%;
-    max-width: 850px;
+    max-width: 900px;
     margin: 30px auto;
 }
 
 main > h1 {
+    font-size: 28px;
     margin-bottom: 8px;
 }
 
 main > p {
-    color: #555;
+    color: #666;
     margin-bottom: 25px;
 }
 
@@ -69,13 +70,13 @@ section {
     background: white;
     padding: 22px;
     margin-bottom: 22px;
+    border: 1px solid #e5e5e5;
     border-radius: 8px;
-    border: 1px solid #ddd;
 }
 
 section h2 {
-    margin-bottom: 15px;
     font-size: 21px;
+    margin-bottom: 16px;
 }
 
 /* Forms */
@@ -91,6 +92,8 @@ textarea {
     padding: 12px;
     font-size: 15px;
     font-family: inherit;
+    color: #222;
+    background: white;
     border: 1px solid #ccc;
     border-radius: 5px;
     outline: none;
@@ -107,10 +110,11 @@ textarea {
 
 /* Buttons */
 button {
-    padding: 12px 18px;
+    padding: 12px 16px;
     background: #00a843;
     color: white;
     font-size: 15px;
+    font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -129,7 +133,7 @@ button:disabled {
 #searchMessage,
 #requestMessage {
     margin-top: 12px;
-    color: #555;
+    color: #666;
     overflow-wrap: anywhere;
 }
 
@@ -144,16 +148,17 @@ button:disabled {
 /* Movie results */
 #movieResults {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 15px;
     margin-top: 18px;
 }
 
 .movie-card {
+    min-width: 0;
     overflow: hidden;
+    background: white;
     border: 1px solid #ddd;
     border-radius: 7px;
-    background: #fff;
 }
 
 .movie-card img {
@@ -165,57 +170,81 @@ button:disabled {
 }
 
 .movie-card-content {
-    padding: 12px;
+    padding: 10px;
 }
 
 .movie-card h3 {
-    font-size: 16px;
-    margin-bottom: 5px;
+    font-size: 15px;
+    margin-bottom: 6px;
     overflow-wrap: anywhere;
 }
 
 .movie-card p {
-    font-size: 13px;
+    font-size: 12px;
     color: #666;
     margin-bottom: 8px;
+    overflow-wrap: anywhere;
 }
 
 .movie-card button {
     width: 100%;
-    padding: 9px;
-    font-size: 14px;
+    padding: 9px 5px;
+    font-size: 12px;
 }
 
-/* Status */
+/* Bot status */
 #botStatus {
-    padding: 10px;
-    background: #f1f1f1;
+    padding: 12px;
+    background: #f2f2f2;
     border-radius: 5px;
 }
 
 /* Footer */
 footer {
-    text-align: center;
-    padding: 22px;
     background: #222;
     color: white;
+    text-align: center;
+    padding: 22px 10px;
     margin-top: 35px;
 }
 
 footer p {
+    font-size: 13px;
     margin: 4px 0;
-    font-size: 14px;
 }
 
-/* Mobile devices */
-@media (max-width: 500px) {
+/* Tablet */
+@media (max-width: 700px) {
+    #movieResults {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    header {
+        padding: 15px 4%;
+    }
+
+    nav {
+        gap: 12px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
     header {
         flex-direction: column;
         align-items: flex-start;
     }
 
+    header h2 {
+        font-size: 20px;
+    }
+
     nav {
-        gap: 12px;
+        gap: 14px;
+    }
+
+    nav a {
+        font-size: 13px;
     }
 
     main {
@@ -223,17 +252,21 @@ footer p {
         margin: 20px auto;
     }
 
-    section {
-        padding: 16px;
+    main > h1 {
+        font-size: 24px;
     }
 
-    main > h1 {
-        font-size: 25px;
+    section {
+        padding: 15px;
+    }
+
+    section h2 {
+        font-size: 19px;
     }
 
     #movieResults {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
     }
 }
-
-  
+```
