@@ -1,86 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Request</title>
-    <link rel="stylesheet" href="/styles.css">
-    <script src="/script.js" defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Movie Request Bot</title>
+<link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-
-    <header>
-        <h2>Movie Request</h2>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#search">Search</a>
-            <a href="#request">Request</a>
-        </nav>
-    </header>
-
-    <main id="home">
-        <h1>Movie Request Website</h1>
-        <p>Search for a movie or request your favourite movie.</p>
-
-        <section id="search">
-            <h2>Search Movies</h2>
-
-            <form id="searchForm">
-                <input
-                    type="search"
-                    id="movieSearch"
-                    placeholder="Enter movie name"
-                    required
-                >
-                <button type="submit">Search</button>
-            </form>
-
-            <div id="searchMessage"></div>
-            <div id="movieResults"></div>
-        </section>
-
-        <section id="request">
-            <h2>Request a Movie</h2>
-
-            <form id="requestForm">
-                <input
-                    type="text"
-                    id="requestMovieName"
-                    placeholder="Movie name"
-                    maxlength="150"
-                    required
-                >
-
-                <input
-                    type="number"
-                    id="requestMovieYear"
-                    placeholder="Release year (optional)"
-                    min="1888"
-                    max="2100"
-                >
-
-                <textarea
-                    id="requestMovieNote"
-                    placeholder="Additional details (optional)"
-                    maxlength="500"
-                ></textarea>
-
-                <button type="submit">Send Request</button>
-            </form>
-
-            <p id="requestMessage"></p>
-        </section>
-
-        <section id="status">
-            <h2>Bot Status</h2>
-            <p id="botStatus">Checking status...</p>
-        </section>
-    </main>
-
-    <footer>
-        <p>Created By Senesh Chamindu</p>
-        <p>© <span id="currentYear"></span></p>
-    </footer>
-
+<header><h1>MOVIE REQUEST BOT</h1><p>Created By Senesh Chamindu</p></header>
+<main>
+<form id="searchForm"><input id="searchInput" placeholder="Search movie titles..." required><button>Search</button></form>
+<section id="resultsSection"><h2>Search Results</h2><div id="results"></div></section>
+<section id="detailsSection" class="hidden"><div id="movieDetails"></div><form id="requestForm"><label>WhatsApp Number</label><input id="phoneInput" required><button>Send Movie Request</button></form></section>
+<section id="successSection" class="hidden"><h2>Request Submitted!</h2><div id="requestSummary"></div><a id="whatsappLink" href="#">Join WhatsApp Group</a></section>
+<section><h2>Request Queue</h2><div id="queue"></div></section>
+</main>
+<footer>Created By Senesh Chamindu © 2026</footer>
+<script src="/app.js"></script>
 </body>
 </html>
