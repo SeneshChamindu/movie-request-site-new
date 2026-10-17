@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>CINE REQUEST | Movie Request Bot</title>
+  <style>
+    :root {
+      --bg:#0b0b0c; --card:#111113; --panel:#1c1c1f;
+      --border:#303034; --green:#28d451; --muted:#929298;
+      --white:#f5f5f6; --red:#ff5050;
+    }
+    * { box-sizing:border-box }
+    body {
+      margin:0; color:var(--white);
+      font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+      background:
+        radial-gradient(ellipse at 50% -20%,#17251a 0%,transparent 50%),
+        var(--bg);
+      min-height:100vh;
+    }
+    button,input { font:inherit }
+    button { cursor:pointer }
+    .wrap { width:min(100% - 28px,700px); margin:24px auto 0 }
+    .header {
+      display:flex; align-items:center; gap:13px;
+      padding:17px 0 23px; border-bottom:1px solid var(--border);
+    }
+    .logo {
+      width:58px;height:58px;display:grid;place-items:center;
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:16px;color:var(--green);font-size:27px;
+    }
+    h1 { font-size:21px; margin:0 0 5px }
+    .muted { color:var(--muted) }
+    .small { font-size:13px }
+    .status {
+      margin-left:auto;white-space:nowrap;border-radius:30px;
+      background:#142d1b;color:var(--green);padding:12px;
+      font-size:13px;font-weight:650;
+    }
+    .card {
+      background:var(--card);border:1px solid var(--border);
+      border-radius:21px;padding:22px;margin-top:22px;
+    }
+    .bot-panel,.queue-panel,.info-panel {
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:17px;padding:18px;margin-top:17px;
+    }
+    .row { display:flex;align-items:center;gap:10px }
+    .between { justify-content:space-between }
+    h2 { font-size:19px;margin:0 0 17px }
+    h3 { font-size:16px;margin:0 }
+    label { display:block;margin:18px 0 9px;color:#c4c4c8 }
+    input {
+      width:100%; min-width:0; padding:17px;
+      border:1px solid #343438; border-radius:14px;
+      color:white;background:#1d1d20;outline:none;
+    }
+    input:focus { border-color:var(--green);box-shadow:0 0 0 2px #28d45122 }
+    .btn {
+      border:0;border-radius:14px;padding:17px;
+      width:100%;background:var(--green);color:#041108;
+      font-weight:750;margin-top:14px;min-height:55px;
+    }
+    .btn:disabled { opacity:.55;cursor:not-allowed }
+    .btn.secondary {
+      color:var(--green);background:#15301d;border:1px solid #275d36;
+    }
+    .section-title { margin:23px 0 12px;font-size:19px }
+    .search-results { display:grid;gap:12px;margin-top:14px }
+    .movie {
+      display:flex;gap:14px;background:var(--panel);
+      border:1px solid var(--border);border-radius:15px;padding:12px;
+    }
+    .poster {
+      width:94px;min-width:94px;height:137px;object-fit:cover;
+      border-radius:10px;background:#29292d;
+    }
+    .movie-info { min-width:0;flex:1 }
+    .movie-info h3 { margin:4px 0 8px;overflow-wrap:anywhere }
+    .movie-info p { margin:0 0 8px;font-size:13px;line-height:1.5 }
+    .tag {
+      display:inline-block;background:#14301d;color:var(--green);
+      border-radius:30px;padding:5px 9px;font-size:12px;
+    }
+    .mini-btn {
+      background:var(--green);color:#061009;border:0;
+      padding:9px 12px;border-radius:9px;font-weight:700;margin-top:10px;
+    }
+    .queue-item { display:flex;align-items:center;gap:13px;padding:13px 0 }
+    .queue-item + .queue-item { border-top:1px solid #303034 }
+    .queue-no {
+      display:grid;place-items:center;width:57px;height:57px;
+      background:#101012;border:1px solid #353539;border-radius:12px;
+      color:var(--green);font-size:18px;flex-shrink:0;
+    }
+    .queue-desc { flex:1;min-width:0 }
+    .queue-desc strong { display:block;overflow-wrap:anywhere }
+    .queue-desc small { display:block;margin-top:5px;color:var(--muted) }
+    .queue-state { color:var(--green);font-size:13px;text-align:right }
+    .footer { text-align:center;color:#5f5f64;font-size:12px;padding:26px 0 30px }
+    .link { color:var(--green);text-decoration:none }
+    .notice { font-size:13px;line-height:1.5;color:var(--muted);margin:12px 0 0 }
+    .hidden { display:none!important }
+    .divider { border:0;border-top:1px solid var(--border);margin:21px 0 }
+    .error { color:#ff8585;font-size:13px;margin-top:12px }
+    .success { color:var(--green);font-size:13px;margin-top:12px }
+
+    /* Large processing screen */
+    .processing {
+      position:fixed;inset:0;z-index:10;background:#080909f7;
+      display:flex;align-items:center;justify-content:center;
+      padding:22px;overflow:auto;
+    }
+    .process-card {
+      width:min(100%,460px);text-align:center;
+      background:#111214;border:1px solid #303034;
+      border-radius:25px;padding:25px 21px;
+      box-shadow:0 0 65px #28d45112;
+    }
+    .cinema-art {
+      height:155px;border-radius:17px;margin-bottom:23px;
+      display:grid;place-items:center;overflow:hidden;
+      background:
+        radial-gradient(ellipse at 50% 70%,#1d7436 0%,transparent 43%),
+        linear-gradient(140deg,#151c17,#080908 65%);
+      border:1px solid #2c3930;
+    }
+    .clapper { font-size:61px;filter:drop-shadow(0 0 22px #28d45155) }
+    .spinner {
+      width:82px;height:82px;margin:24px auto;
+      border:6px solid #282a2c;border-top-color:var(--green);
+      border-right-color:#219b40;border-radius:50%;
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg) } }
+    .steps { text-align:left;background:#1b1c1e;border:1px solid #303034;
+      border-radius:15px;padding:15px;margin-top:22px }
+    .step { display:flex;gap:12px;align-items:flex-start;padding:10px 0;color:var(--muted) }
+    .step + .step { border-top:1px solid #303034 }
+    .step-icon { width:23px;color:var(--green);font-weight:bold }
+    .step.active { color:white }
+    .step.active .step-icon { animation:pulse 1s infinite }
+    @keyframes pulse { 50% { opacity:.3 } }
+    .process-title { font-size:23px;margin:0 0 8px }
+    .process-msg { color:var(--muted);font-size:14px;line-height:1.6 }
+    .progress-track { height:5px;background:#292b2c;border-radius:20px;overflow:hidden;margin-top:20px }
+    .progress-bar { width:30%;height:100%;background:var(--green);border-radius:20px;transition:width .4s }
+    @media(max-width:420px) {
+      .wrap { width:calc(100% - 20px);margin-top:10px }
+      .card { padding:16px;border-radius:18px }
+      .status { padding:10px;font-size:11px }
+      .logo { width:49px;height:49px }
+      .movie { gap:10px;padding:10px }
+      .poster { width:80px;min-width:80px;height:118px }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      *,*::before,*::after { animation-duration:.01ms!important;transition:none!important }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <div class="logo">▱</div>
+      <div>
+        <h1>Movie Request Bot</h1>
+        <div class="muted">Movie request management</div>
+      </div>
+      <div class="status" id="headerStatus">● CHECKING</div>
+    </header>
+
+    <section class="bot-panel">
+      <div class="row between">
+        <h2 style="margin:0">♧ &nbsp;Bot Status</h2>
+        <strong id="botLabel" class="muted">Checking...</strong>
+      </div>
+      <p id="botMessage" class="muted">Checking the bot connection.</p>
+    </section>
+
+    <section class="card">
+      <h2>Request a Movie</h2>
+      <form id="searchForm">
+        <label for="searchInput">Movie name</label>
+        <input id="searchInput" placeholder="Enter movie name..." required maxlength="120">
+        <button class="btn" type="submit">SEARCH MOVIES</button>
+      </form>
+      <div id="searchMessage" class="notice" aria-live="polite"></div>
+      <div id="results" class="search-results"></div>
+
+      <div id="selectedPanel" class="hidden">
+        <hr class="divider">
+        <div class="movie">
+          <img id="selectedPoster" class="poster" alt="Selected movie poster">
+          <div class="movie-info">
+            <h3 id="selectedTitle"></h3>
+            <p id="selectedMeta" class="muted"></p>
+            <span class="tag">Movie Selected</span>
+          </div>
+        </div>
+
+        <form id="requestForm">
+          <h2 style="margin-top:24px;margin-bottom:5px">Your Details</h2>
+          <label for="contact">Your WhatsApp / Telegram Number</label>
+          <input id="contact" type="tel" placeholder="+94 7X XXX XXXX"
+            autocomplete="tel" required maxlength="20">
+          <p class="notice">Number eka request eka oyage kiyala identify karanna saha request status eka danum denna use karanawa.</p>
+          <button id="requestButton" class="btn" type="submit">SEND MOVIE REQUEST</button>
+        </form>
+      </div>
+      <div id="requestMessage" aria-live="polite"></div>
+    </section>
+
+    <section class="info-panel">
+      <h2>♙ &nbsp;Request Information</h2>
+      <div class="row between"><span class="muted">Selected movie</span><strong id="infoMovie">None</strong></div>
+      <div class="row between" style="margin-top:13px"><span class="muted">Your request number</span><strong id="infoNumber">—</strong></div>
+      <div class="row between" style="margin-top:13px"><span class="muted">Queue position</span><strong id="infoPosition">—</strong></div>
+      <div class="row between" style="margin-top:13px"><span class="muted">Request status</span><strong id="infoStatus">Not submitted</strong></div>
+      <p id="groupArea" class="notice"></p>
+    </section>
+
+    <section class="queue-panel">
+      <div class="row between">
+        <h2 style="margin:0">☷ &nbsp;Request Queue</h2>
+        <span class="tag">FIFO</span>
+      </div>
+      <p class="notice">Requests are listed in submission order.</p>
+      <div id="queueList"></div>
+    </section>
+
+    <footer class="footer">Created By Senesh Chamindu © 2026</footer>
+  </main>
+
+  <div id="processing" class="processing hidden" role="dialog"
+    aria-modal="true" aria-labelledby="processingTitle">
+    <div class="process-card">
+      <div class="cinema-art"><div class="clapper">🎬</div></div>
+      <div class="tag">CINE REQUEST</div>
+      <h2 class="process-title" id="processingTitle" style="margin-top:16px">Processing Your Request</h2>
+      <p id="processMessage" class="process-msg">Submitting your request securely...</p>
+      <div id="spinner" class="spinner"></div>
+      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      <div class="steps">
+        <div class="step active" id="step1"><span class="step-icon">◉</span><span>Sending request to server</span></div>
+        <div class="step" id="step2"><span class="step-icon">◷</span><span>Adding to FIFO queue</span></div>
+        <div class="step" id="step3"><span class="step-icon">◌</span><span>Waiting for bot processing</span></div>
+      </div>
+      <button id="closeProcessing" class="btn secondary hidden" type="button">BACK TO WEBSITE</button>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let selectedMovie = null;
+    let config = { groupLink: "", botOnline: false };
+    let lastRequestId = null;
+
+    function safeText(value) {
+      return String(value ?? "");
+    }
+
+    function posterUrl(movie) {
+      return movie.poster || movie.posterUrl || movie.image ||
+        movie.Poster || movie.poster_url || "";
+    }
+
+    // Support common API response shapes; adapt this if your API differs.
+    function normalizeMovies(data) {
+      const list = Array.isArray(data) ? data :
+        data.results || data.movies || data.data || data.items || [];
+      return list.map(m => ({
+        title: m.title || m.name || m.movie_name || m.Title || "Untitled movie",
+        year: m.year || m.releaseYear || m.release_date || m.Year || "",
+        genre: Array.isArray(m.genre) ? m.genre.join(", ") :
+          (m.genre || m.genres || ""),
+        overview: m.overview || m.description || m.plot || m.Plot || "",
+        poster: posterUrl(m),
+        id: m.id || m.movieId || m.imdbID || ""
+      }));
+    }
+
+    function setBotStatus(online) {
+      $("botLabel").textContent = online ? "Active" : "Offline";
+      $("botLabel").style.color = online ? "var(--green)" : "var(--muted)";
+      $("headerStatus").textContent = online ? "● ONLINE" : "● OFFLINE";
+      $("headerStatus").style.color = online ? "var(--green)" : "#b3b3b7";
+      $("headerStatus").style.background = online ? "#142d1b" : "#28282b";
+      $("botMessage").textContent = online
+        ? "Bot is ready to process movie requests."
+        : "Bot is currently offline. Requests may wait in the queue.";
+    }
+
+    async function loadConfig() {
+      try {
+        const r = await fetch("/api/config");
+        if (!r.ok) throw new Error();
+        config = await r.json();
+        setBotStatus(Boolean(config.botOnline));
+        if (config.groupLink) {
+          const a = document.createElement("a");
+          a.href = config.groupLink;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.className = "link";
+          a.textContent = "Join WhatsApp Group";
+          $("groupArea").replaceChildren(a);
+        } else {
+          $("groupArea").textContent = "WhatsApp group link will appear here when configured.";
+        }
+      } catch {
+        setBotStatus(false);
+      }
+    }
+
+    async function loadStatus() {
+      try {
+        const r = await fetch("/api/status");
+        const data = await r.json();
+        setBotStatus(Boolean(data.online));
+      } catch {
+        setBotStatus(false);
+      }
+    }
+
+    function renderMovies(movies) {
+      const host = $("results");
+      host.replaceChildren();
+
+      if (!movies.length) {
+        $("searchMessage").textContent = "No matching movies found.";
+        return;
+      }
+
+      $("searchMessage").textContent = movies.length + " movie(s) found.";
+      movies.slice(0, 20).forEach(movie => {
+        const card = document.createElement("article");
+        card.className = "movie";
+
+        const img = document.createElement("img");
+        img.className = "poster";
+        img.alt = movie.title + " poster";
+        img.loading = "lazy";
+        img.src = movie.poster || "data:image/svg+xml," + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="180"><rect width="100%" height="100%" fill="#202024"/><text x="50%" y="50%" fill="#999" text-anchor="middle" font-size="12">No Poster</text></svg>'
+        );
+
+        const info = document.createElement("div");
+        info.className = "movie-info";
+        const title = document.createElement("h3");
+        title.textContent = movie.title;
+        const meta = document.createElement("p");
+        meta.className = "muted";
+        meta.textContent = [movie.year, movie.genre].filter(Boolean).join(" · ");
+        const description = document.createElement("p");
+        description.textContent = movie.overview.slice(0, 150);
+        const button = document.createElement("button");
+        button.className = "mini-btn";
+        button.textContent = "SELECT MOVIE";
+        button.type = "button";
+        button.addEventListener("click", () => selectMovie(movie));
+
+        info.append(title, meta, description, button);
+        card.append(img, info);
+        host.append(card);
+      });
+    }
+
+    function selectMovie(movie) {
+      selectedMovie = movie;
+      $("selectedPanel").classList.remove("hidden");
+      $("selectedTitle").textContent = movie.title;
+      $("selectedMeta").textContent =
+        [movie.year, movie.genre].filter(Boolean).join(" · ");
+      $("selectedPoster").src = movie.poster || "";
+      $("selectedPoster").alt = movie.title + " poster";
+      $("infoMovie").textContent = movie.title;
+      $("requestMessage").textContent = "";
+      $("contact").focus();
+      $("selectedPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    $("searchForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const query = $("searchInput").value.trim();
+      if (!query) return;
+
+      $("searchMessage").textContent = "Searching movies...";
+      $("results").replaceChildren();
+
+      try {
+        const response = await fetch("/api/movies/search?q=" + encodeURIComponent(query));
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Search failed.");
+        renderMovies(normalizeMovies(data));
+      } catch (error) {
+        $("searchMessage").textContent = error.message ||
+          "Movie search failed. Check the API settings.";
+      }
+    });
+
+    function showProcessing(message) {
+      $("processing").classList.remove("hidden");
+      $("closeProcessing").classList.add("hidden");
+      $("spinner").classList.remove("hidden");
+      $("processMessage").textContent = message;
+      $("progressBar").style.width = "15%";
+      ["step1","step2","step3"].forEach((id, index) => {
+        $(id).classList.toggle("active", index === 0);
+      });
+    }
+
+    function processingStep(step, message) {
+      $("processMessage").textContent = message;
+      $("progressBar").style.width = ({1:"35%",2:"68%",3:"90%",4:"100%"})[step] || "25%";
+      ["step1","step2","step3"].forEach((id, index) => {
+        $(id).classList.toggle("active", index === Math.min(step - 1, 2));
+        if (index < step - 1) $(id).querySelector(".step-icon").textContent = "✓";
+      });
+    }
+
+    function finishProcessing(message, success) {
+      $("processMessage").textContent = message;
+      $("processingTitle").textContent = success ? "Request Received!" : "Request Failed";
+      $("processingTitle").style.color = success ? "var(--green)" : "#ff8585";
+      $("spinner").classList.add("hidden");
+      $("closeProcessing").classList.remove("hidden");
+      $("progressBar").style.width = success ? "100%" : "0%";
+    }
+
+    $("closeProcessing").addEventListener("click", () => {
+      $("processing").classList.add("hidden");
+      $("processingTitle").textContent = "Processing Your Request";
+      $("processingTitle").style.color = "";
+      $("requestButton").disabled = false;
+    });
+
+    $("requestForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!selectedMovie) return;
+
+      const contact = $("contact").value.trim();
+      $("requestButton").disabled = true;
+      showProcessing("Sending your movie request to the server...");
+
+      try {
+        processingStep(1, "Checking your request...");
+        const response = await fetch("/api/requests", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ movie: selectedMovie.title, contact })
+        });
+
+        const data = await response.json();
+
+        if (response.status === 409 && data.request) {
+          throw new Error(data.error);
+        }
+        if (!response.ok) throw new Error(data.error || "Request failed.");
+
+        const request = data.request;
+        lastRequestId = request.id;
+        processingStep(2, "Request received. Added to the queue.");
+        await loadQueue();
+
+        $("infoNumber").textContent = "#" + request.number;
+        $("infoPosition").textContent = "#" + data.position;
+        $("infoStatus").textContent = request.status;
+        $("requestMessage").className = "success";
+        $("requestMessage").textContent = "Request received successfully.";
+
+        processingStep(3, "Your request is waiting in the FIFO queue.");
+        finishProcessing(
+          "Your request #" + request.number +
+          " is in queue position #" + data.position +
+          ". Status: " + request.status + ".",
+          true
+        );
+        pollRequest(request.id);
+      } catch (error) {
+        finishProcessing(error.message || "Unable to submit request.", false);
+        $("requestMessage").className = "error";
+        $("requestMessage").textContent = error.message || "Request failed.";
+  
