@@ -1,10 +1,14 @@
 {
-  "name": "movie-request-site",
+  "name": "cine-request",
   "version": "1.0.0",
-  "description": "Simple Movie Request Website",
+  "private": true,
+  "description": "Movie Request Website",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
